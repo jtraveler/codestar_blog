@@ -12,7 +12,41 @@ class PostList(generic.ListView):
     def get_queryset(self):
         return Post.objects.filter(status=1).order_by('-created_on')
     
+
 def post_detail(request, slug):
+    """
+    Display an individual :model:`blog.Post`.
+
+    **Context**
+
+    ``post``
+        An instance of :model:`blog.Post`.
+    ``comments``
+        All approved comments related to the post.
+
+    **Template:**
+
+    :template:`blog/post_detail.html`
+    """
+    queryset = Post.objects.filter(status=1)
+    post = get_object_or_404(queryset, slug=slug)
+    
+    # Get all approved comments for this post
+    comments = post.comments.filter(approved=True).order_by('created_on')
+    comment_count = comments.count()
+
+    return render(
+        request,
+        "blog/post_detail.html",
+        {
+            "post": post,
+            "comments": comments,
+            "comment_count": comment_count,
+            "coder": "Matt Rudge"
+        },
+    )
+
+
     """
     Display an individual :model:`blog.Post`.
 
