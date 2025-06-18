@@ -1,6 +1,11 @@
 from django.contrib import admin
-from .models import Post, Comment
+from .models import Post, Comment, CollaborationRequest, About
 from django_summernote.admin import SummernoteModelAdmin
+
+@admin.register(About)
+class AboutAdmin(SummernoteModelAdmin):
+    summernote_fields = ('content',)
+    list_display = ('title', 'updated_on')
 
 @admin.register(Post)
 class PostAdmin(SummernoteModelAdmin):
@@ -21,3 +26,10 @@ class CommentAdmin(admin.ModelAdmin):
         queryset.update(approved=True)
         
     approve_comments.short_description = "Approve selected comments"
+
+
+@admin.register(CollaborationRequest)
+class CollaborationRequestAdmin(admin.ModelAdmin):
+    list_display = ('name', 'email', 'message', 'read', 'created_on')
+    list_filter = ('read', 'created_on')
+    search_fields = ('name', 'email')
