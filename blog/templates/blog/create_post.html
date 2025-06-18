@@ -1,11 +1,11 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container mt-4">
     <div class="row">
         <div class="col-md-8 offset-md-2">
-            <h2>Edit Post: {{ post.title }}</h2>
+            <h2>Create New Post</h2>
             <hr>
             
             <form method="post" enctype="multipart/form-data">
@@ -30,12 +30,6 @@
                 <div class="mb-3">
                     <label for="{{ post_form.featured_image.id_for_label }}" class="form-label">Featured Image:</label>
                     {{ post_form.featured_image }}
-                    {% if post.featured_image %}
-                        <div class="mt-2">
-                            <p>Current image:</p>
-                            <img src="{{ post.featured_image.url }}" alt="Current featured image" style="max-width: 200px;" class="img-thumbnail">
-                        </div>
-                    {% endif %}
                 </div>
                 
                 <div class="mb-3">
@@ -48,10 +42,8 @@
                     {{ post_form.status }}
                 </div>
                 
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-success">Update Post</button>
-                    <a href="{% url 'post_detail' post.slug %}" class="btn btn-secondary">Cancel</a>
-                </div>
+                <button type="submit" class="btn btn-primary">Create Post</button>
+                <a href="{% url 'home' %}" class="btn btn-secondary">Cancel</a>
             </form>
         </div>
     </div>

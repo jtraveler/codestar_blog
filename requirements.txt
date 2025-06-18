@@ -9,6 +9,7 @@ cryptography==45.0.4
 defusedxml==0.7.1
 dj-database-url==3.0.0
 dj3-cloudinary-storage==0.0.6
+Pillow==10.0.1
 Django==5.2.3
 django-allauth==0.57.2
 django-crispy-forms==2.4

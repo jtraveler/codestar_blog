@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from .models import Post, CollaborationRequest, About, Comment 
-from .forms import CommentForm, CollaborationForm
+from .forms import CommentForm, CollaborationForm, PostForm
 
 
 class PostList(generic.ListView):
@@ -67,6 +67,27 @@ def post_detail(request, slug):
             "comment_form": comment_form,
         },
     )
+
+
+@login_required
+def post_create(request):
+    """
+    Create a new blog post with image upload
+    """
+    if request.method == 'POST':
+        post_form = PostForm(data=request.POST, files=request.FILES)
+        if post_form.is_valid():
+            post = post_form.save(commit=False)
+            post.author = request.user
+            post.save()
+            messages.success(request, f'Post "{post.title}" has been created!')
+            return redirect('post_detail', slug=post.slug)
+        else:
+            messages.error(request, 'There was an error creating your post.')
+    else:
+        post_form = PostForm()
+    
+    return render(request, 'blog/create_post.html', {'post_form': post_form})
 
 
 def about_me(request):
@@ -198,7 +219,7 @@ def comment_edit(request, slug, comment_id):
 @login_required
 def post_edit(request, slug):
     """
-    Edit a blog post
+    Edit a blog post with image upload support
     """
     post = get_object_or_404(Post, slug=slug)
     
@@ -208,17 +229,20 @@ def post_edit(request, slug):
         return redirect('post_detail', slug=slug)
     
     if request.method == 'POST':
-        # Update post with form data
-        post.title = request.POST.get('title')
-        post.excerpt = request.POST.get('excerpt')
-        post.content = request.POST.get('content')
-        post.status = int(request.POST.get('status'))
-        post.save()
-        
-        messages.success(request, f'Post "{post.title}" has been updated!')
-        return redirect('post_detail', slug=post.slug)
+        post_form = PostForm(data=request.POST, files=request.FILES, instance=post)
+        if post_form.is_valid():
+            post = post_form.save()
+            messages.success(request, f'Post "{post.title}" has been updated!')
+            return redirect('post_detail', slug=post.slug)
+        else:
+            messages.error(request, 'There was an error updating your post.')
+    else:
+        post_form = PostForm(instance=post)
     
-    return render(request, 'blog/edit_post.html', {'post': post})
+    return render(request, 'blog/edit_post.html', {
+        'post': post,
+        'post_form': post_form
+    })
 
 
 @login_required  
